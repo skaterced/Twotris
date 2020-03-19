@@ -93,7 +93,7 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
   //check if blinkingLines
   if (0!=blinkingLinesP1){
     
-    if (-1==blinkingLinesP1){ 
+    if (-1==blinkingLinesP1){ // new Piece
       blinkingLinesP1=0;
       p1->reInit(nextP1->shape);
       p1->update();
@@ -109,6 +109,23 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
       nextP1->update();
     }
     else if (blinkingLinesP1>0){
+      int temp=blinkingLinesP1&511;
+      for (int i=0; i<15; i++){ //lineNb 0=bottom, 15 is top
+        if (1==temp&1){
+          if (0==BlinkingP1%2)
+            ab.fillRect(LB,59-i*SW,10*SW,SW,1);
+          else
+            ab.fillRect(LB,59-i*SW,10*SW,SW,0);
+        }
+        temp=temp>>1;
+      }
+      if (0==BlinkingP1--){
+        removeBlinkingLines(true);
+        blinkingLinesP1=-1;
+      }
+    }
+    /*
+    else if (blinkingLinesP1>0){
       byte width=blinkingLinesP1&7;
       if (0==BlinkingP1%2)
         ab.fillRect(LB,blinkingLinesP1>>3,10*SW,width*SW,1);
@@ -118,8 +135,8 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
         removeBlinkingLines(true);
         blinkingLinesP1=-1;
       }
-    }
-    else {
+    }*/
+    else { //BlinkingP1== -2 or less
         ab.setCursor(LB-7,30);
         ab.println("Busted !");
     }
@@ -166,7 +183,10 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
     }
     else {
       ab.setCursor(65,30);
-      ab.println("Busted!");
+      if (blinkingLinesP2==-2)
+        ab.println("Busted!");
+      else 
+        ab.println("Array filled!");
     }
   }
   else {

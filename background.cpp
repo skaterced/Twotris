@@ -24,12 +24,17 @@ void drawBackground(){
   //next
   ab.fillRect(3,4,4*SW,5*SW,0);
   ab.fillRect(109,4,4*SW,5*SW,0);
-  
-  //debug
-  /*  ab.setCursor(75,30);
-    ab.print(blinkingLinesP1);*/
 
-  
+  /*
+  //debug
+  int temp=0;
+  for (int i=0; i<160;i++){
+    if (occupiedGridP1[i])
+      temp++;
+  }
+    ab.setCursor(75,30);
+    ab.print(temp);
+*/
   //
   drawStillSquares();
 }
@@ -86,7 +91,33 @@ void drawStillSquares(){
   }  
 }
 
-void checkFullLines(byte minY, byte maxY, bool p1){
+void checkFullLines(byte minY, byte maxY, bool p1){ //let's start again
+  int nbSameY[4]={0,0,0,0};
+  if (p1&&blinkingLinesP1!=0){ //this should not happend
+    ab.clear();
+    ab.print("Error Blinking=");
+    ab.print(blinkingLinesP1);
+    ab.display();
+    delay(3000);
+  }
+  for(int j=0; j<(maxY-minY)/SW+1; j++){
+    for(int i=0;i<NbStillSquaresP1;i++){
+      if (stillSquaresP1[i].y==minY+j*SW) {
+        nbSameY[j]++;
+      }
+    }
+    if (10==nbSameY[j]){
+      blinkingLinesP1+=1<<(14-((minY-3)/SW+j));  // less significant bit is bottom line
+      BlinkingP1=10;
+    }
+  }
+  
+  if (0==blinkingLinesP1)
+    blinkingLinesP1=-1;
+  // Add test for P2
+}
+/*
+void checkFullLines(byte minY, byte maxY, bool p1){ // BUG ! Full Lines are not necessary adjacent
 
   int nbSameY[4]={0,0,0,0};
   int minYtoRemove=66;
@@ -116,7 +147,7 @@ void checkFullLines(byte minY, byte maxY, bool p1){
     else
       blinkingLinesP1=-1;
   }
-  else { /*same for p2**/
+  else { //same for p2
     for(int j=0; j<(maxY-minY)/SW+1; j++){
       for(int i=0;i<NbStillSquaresP2;i++){
     //stillSquaresP1[i].draw();
@@ -141,29 +172,46 @@ void checkFullLines(byte minY, byte maxY, bool p1){
       blinkingLinesP2=-1;    
   }
 }
-
+*/
 void removeBlinkingLines(bool p1){
 
   if (p1){
-    int width=blinkingLinesP1&7;
-    int minY=blinkingLinesP1>>3;
-    for (int i=0; i<NbStillSquaresP1; i++){
-      while((minY<=stillSquaresP1[i].y)&&(stillSquaresP1[i].y<=(minY+(width-1)*SW))){
-        for (int j=i;j<NbStillSquaresP1;j++){
-          stillSquaresP1[j]=stillSquaresP1[j+1];
-        }
+    int temp=blinkingLinesP1&511;
+    //ab.fillRect(LB,3+i*SW,10*SW,SW,1);
+    for (int k=0; k<15; k++){
+      if (1==temp&1){
+        for(int i=0; i<NbStillSquaresP1; i++){
+          while((59-k*SW)==stillSquaresP1[i].y){
+            if (i==NbStillSquaresP1-1){
+              stillSquaresP1[i].y=0;
+              stillSquaresP1[i].type=0;
+            }
+            for (int j=i;j<NbStillSquaresP1-1;j++){
+              stillSquaresP1[j]=stillSquaresP1[j+1];
+            }
+            NbStillSquaresP1--;
+          }
+        if (stillSquaresP2[i].y<59-k*SW){
+          stillSquaresP2[i].y+=SW;
       }
-      //warning, could be moved twice ?
-      if (stillSquaresP1[i].y<minY){
-        stillSquaresP1[i].y+=width*SW;
+        }
+        temp=temp>>1;
       }
     }
-    NbStillSquaresP1-=width*10;
-  }
+  } 
   else {/*same for p2**/
     int width=blinkingLinesP2&7;
     int minY=blinkingLinesP2>>3;
-    for (int i=0; i<NbStillSquaresP2; i++){
+    /*
+    int temp=getIndice(LB+6+9*SW,minY,false);
+    for (int i=temp+width*10;i>=0;i--){      
+      if ((i-width*10)>=0){
+        occupiedGridP2[i]=occupiedGridP2[i-width*10];  
+      }
+      else
+        occupiedGridP1[i]=false;  
+    }*/
+      for(int i=0; i<NbStillSquaresP2; i++){
       while((minY<=stillSquaresP2[i].y)&&(stillSquaresP2[i].y<=(minY+(width-1)*SW))){
         for (int j=i;j<NbStillSquaresP2;j++){
           stillSquaresP2[j]=stillSquaresP2[j+1];

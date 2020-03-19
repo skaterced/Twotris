@@ -1,4 +1,5 @@
 
+
 #include "globals.h"
 #include "square.h"
 #include "background.h"
@@ -6,8 +7,6 @@
 Piece(bool p1):Piece(0,0,0,p1){//:Piece(p1? 23:23+6+9*SW, 3,random(6)+1,p1){
   this->reInit();
 }*/
-
-
 void Square::draw(){
   switch(this->type){
     case TYPE_EMPTY :
@@ -32,14 +31,14 @@ void Square::draw(){
         ab.drawLine(this->x+1,this->y+1,this->x+3,this->y+1,1);
       break;      
     default:
-      ab.fillRect(this->x,this->y,SW-1,SW-1,1);
+      ab.fillRect(this->x,this->y,SW,SW,1);
       break;
   }
 }
 
 void Piece::reInit(byte shape){
   this->shape=shape;
-  this->x= p1? 23:23+6+9*SW;
+  this->x= p1? LB:LB+6+9*SW;
   this->y= 3;
   this->orientation=0; //depends... todo check
   if (p1)
@@ -63,6 +62,9 @@ void Piece::shapeShift(){
     case SHAPE_I :
       temp2=TYPE_4;
     break;
+    case SHAPE_S :
+      temp2=TYPE_STONE;
+    break;
     default :
       temp2=TYPE_EMPTY;
     break;
@@ -74,23 +76,25 @@ void Piece::shapeShift(){
   
 void Piece::stick(){
   int minY=64;
-  int maxY=0;
-  if (this->p1){
+  int maxY=0;  
+  if (this->p1){    
     for (int i=0; i<4; i++){
+//      occupiedGridP1[getIndice(this->body[i].x,this->body[i].y,true)]=true;
       stillSquaresP1[NbStillSquaresP1+i]=this->body[i];
       if (this->body[i].y>maxY)
         maxY=this->body[i].y;
       if (this->body[i].y<minY)
-        minY=this->body[i].y;     
+        minY=this->body[i].y;           
     }
     if (NbStillSquaresP1+4<=MAXS){
       NbStillSquaresP1+=4;
       checkFullLines(minY, maxY,true);
     }
-    else blinkingLinesP1=-2;
+    else blinkingLinesP1=-2;  //Busted by filling the Squares array...
   }
   else { //p2
     for (int i=0; i<4; i++){
+ //     occupiedGridP2[getIndice(this->body[i].x,this->body[i].y,false)]=true;
       stillSquaresP2[NbStillSquaresP2+i]=this->body[i];
       if (this->body[i].y>maxY)
         maxY=this->body[i].y;
@@ -101,7 +105,7 @@ void Piece::stick(){
       NbStillSquaresP2+=4;
       checkFullLines(minY, maxY,false);
     }
-    else blinkingLinesP1=-2;
+    else blinkingLinesP2=-2; //Busted by filling the Squares array...
   }  
 }
 void Piece::update(){
@@ -286,6 +290,13 @@ void Piece::update(){
       body[3].y=this->y;    
     break;
   }
+  for (int i=1; i<4;i++){ //replace out of grid squares
+    if (body[i].y>128){
+      body[i].x=this->x;
+      body[i].y=this->y;
+    }
+    
+  }
 }
 bool Piece::move(byte dir){
   bool temp;
@@ -323,6 +334,24 @@ bool Piece::move(byte dir){
   }
   return true;
 }
+/*
+bool Piece::checkCollision(){ //return true if Piece collides with something
+  int temp = this->p1 ? 0:6+9*SW;
+  for (int i=0;i<4;i++){
+    if ((this->body[i].x>LB+temp+9*SW)||(this->body[i].x<LB+temp)||((this->body[i].y>63-SW)&&(this->body[i].y<127)) )
+      return true;
+    if (this->p1){
+      if (occupiedGridP1[getIndice(this->body[i].x,this->body[i].y,true)])
+        return true;
+    }
+    else {
+      if (occupiedGridP2[getIndice(this->body[i].x,this->body[i].y,false)])
+        return true;
+    }
+  }
+  return false;
+}
+*/
 
 bool Piece::checkCollision(){ //return true if Piece collides with something
   int temp = this->p1 ? 0:6+9*SW;
@@ -361,3 +390,27 @@ void Piece::draw(){
     body[i].draw();
   }
 }
+
+void resetOccupiedGrids(){
+  /*
+  for (int i=0; i<160; i++){
+    occupiedGridP1[i]=false;
+    occupiedGridP2[i]=false;
+  }
+  */
+}
+
+int getIndice(int x, int y, bool p1){
+  int temp=p1 ? LB:LB+6+9*SW;
+  temp=(x-temp)/4;
+  temp+=(y-3)/4*10;
+  return temp;
+}
+
+/*
+int getIndice(int x, int y){ //from 2PP
+  int temp=(x-LB)/casesLength;
+  temp+=(y-upBorder)/casesHeight*casesCol;
+  return temp;
+}
+*/

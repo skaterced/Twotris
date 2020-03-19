@@ -66,5 +66,7 @@ class Piece {
     bool Piece::checkCollision();
 };
 
+void resetOccupiedGrids();
+int getIndice(int x, int y, bool p1);
 
 #endif

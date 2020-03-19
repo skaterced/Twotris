@@ -23,9 +23,15 @@ int BlinkingP1=0;
 int BlinkingP2=0;
 int scoreP1=0;
 int scoreP2=0;
-// could be limited to square.cpp ?
+//bool occupiedGridP1[160];
+//bool occupiedGridP2[160];
 int NbStillSquaresP1=0;
 int NbStillSquaresP2=0;
+
+// Settings TODO when several, put them on a byte and mask the one you want
+bool GIFT=true;
+
+//Initialised in order to make a nice Title
 class Square stillSquaresP1 [MAXS]={Square(TR1+4*SW,TL1,TYPE_EMPTY),Square(TR1+5*SW,TL1,TYPE_EMPTY),Square(TR1+9*SW,TL1,TYPE_4),Square(TR1+10*SW,TL1,TYPE_4),Square(TR1+15*SW,TL1,TYPE_DOTS),Square(TR1+16*SW,TL1,TYPE_DOTS),Square(TR1+14*SW,TL1,TYPE_DOTS),
                                     Square(TR1+22*SW,TL1,TYPE_SLASH),Square(TR1+26*SW,TL1,TYPE_SLASH),Square(TR1+28*SW,TL1,TYPE_STONE),Square(TR1+29*SW,TL1,TYPE_STONE),Square(TR1+30*SW,TL1,TYPE_STONE),
                                     

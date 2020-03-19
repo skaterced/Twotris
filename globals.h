@@ -21,7 +21,7 @@
 #define MOVE_RIGHT 1
 #define MOVE_DOWN 2
 #define MOVE_LEFT 3
-#define MAXS 120
+#define MAXS 110
 
 extern Arduboy2 ab;
 extern int timer;
@@ -41,10 +41,13 @@ extern int BlinkingP1;
 extern int BlinkingP2;
 extern int scoreP1;
 extern int scoreP2;
-
+//extern bool occupiedGridP1[160];
+//extern bool occupiedGridP2[160];
 extern int NbStillSquaresP1;
 extern int NbStillSquaresP2;
 extern class Square stillSquaresP1 [MAXS];
 extern class Square stillSquaresP2 [MAXS];
+
+extern bool GIFT;
 
 #endif
