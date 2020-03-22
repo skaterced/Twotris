@@ -1,5 +1,4 @@
 
-
 #include "globals.h"
 #include "square.h"
 #include "background.h"
@@ -8,8 +7,9 @@ Piece(bool p1):Piece(0,0,0,p1){//:Piece(p1? 23:23+6+9*SW, 3,random(6)+1,p1){
   this->reInit();
 }*/
 void Square::draw(){
+  int temp;
   switch(this->type){
-    case TYPE_EMPTY :
+    case TYPE_SIMPLE :
       ab.drawRect(this->x,this->y,SW,SW,1);
       break;
     case TYPE_SLASH :
@@ -30,21 +30,27 @@ void Square::draw(){
         ab.drawLine(this->x,this->y,this->x+2,this->y,1);
         ab.drawLine(this->x+1,this->y+1,this->x+3,this->y+1,1);
       break;      
-    default:
+    case TYPE_FILLED:
       ab.fillRect(this->x,this->y,SW,SW,1);
       break;
+    case TYPE_BLINKING:
+      temp = 0==(timer%2)? 1:0;
+      ab.fillRect(this->x,this->y,SW,SW,temp);
+      break;
+    default :
+    break;
   }
 }
 
 void Piece::reInit(byte shape){
   this->shape=shape;
-  this->x= p1? LB:LB+6+9*SW;
+  this->x= p1? LB1:LB2;
   this->y= 3;
   this->orientation=0; //depends... todo check
   if (p1)
     p1GoesToTheRight=true;
   else
-    p2GoesToTheRight=false;
+    p2GoesToTheRight=true;
   //this->shapeShift();
 }
 
@@ -66,7 +72,8 @@ void Piece::shapeShift(){
       temp2=TYPE_STONE;
     break;
     default :
-      temp2=TYPE_EMPTY;
+      temp2=TYPE_SIMPLE;
+      //temp2=TYPE_BLINKING;
     break;
   }
   for (int i=0; i<4; i++){
@@ -79,35 +86,41 @@ void Piece::stick(){
   int maxY=0;  
   if (this->p1){    
     for (int i=0; i<4; i++){
-//      occupiedGridP1[getIndice(this->body[i].x,this->body[i].y,true)]=true;
-      stillSquaresP1[NbStillSquaresP1+i]=this->body[i];
+      occupiedGridP1[getIndice(this->body[i].x,this->body[i].y,true)]=this->body[i].type;
+//      stillSquaresP1[NbStillSquaresP1+i]=this->body[i];
       if (this->body[i].y>maxY)
         maxY=this->body[i].y;
       if (this->body[i].y<minY)
         minY=this->body[i].y;           
     }
+    /*
     if (NbStillSquaresP1+4<=MAXS){
       NbStillSquaresP1+=4;
       checkFullLines(minY, maxY,true);
     }
     else blinkingLinesP1=-2;  //Busted by filling the Squares array...
+    */    
   }
   else { //p2
     for (int i=0; i<4; i++){
- //     occupiedGridP2[getIndice(this->body[i].x,this->body[i].y,false)]=true;
-      stillSquaresP2[NbStillSquaresP2+i]=this->body[i];
+      occupiedGridP2[getIndice(this->body[i].x,this->body[i].y,false)]=this->body[i].type;
+      //stillSquaresP2[NbStillSquaresP2+i]=this->body[i];
       if (this->body[i].y>maxY)
         maxY=this->body[i].y;
       if (this->body[i].y<minY)
         minY=this->body[i].y;     
     }
+    /*
     if (NbStillSquaresP2+4<=MAXS){
       NbStillSquaresP2+=4;
       checkFullLines(minY, maxY,false);
     }
     else blinkingLinesP2=-2; //Busted by filling the Squares array...
-  }  
+    */
+  }
+  checkFullLines(minY, maxY,this->p1? true:false);
 }
+
 void Piece::update(){
   body[0].x=this->x;
   body[0].y=this->y;
@@ -191,14 +204,6 @@ void Piece::update(){
     break;
     case SHAPE_Z:
       switch (this->orientation){
-        case 1 : case 3:
-          body[1].x=this->x;
-          body[1].y=this->y-SW;
-          body[2].x=this->x+SW;
-          body[2].y=this->y;
-          body[3].x=this->x-SW;
-          body[3].y=this->y-SW;
-        break;
         case 0 : case 2:
           body[1].x=this->x;
           body[1].y=this->y+SW;
@@ -206,6 +211,14 @@ void Piece::update(){
           body[2].y=this->y;
           body[3].x=this->x+SW;
           body[3].y=this->y-SW;
+        break;
+        case 1 : case 3:
+          body[1].x=this->x;
+          body[1].y=this->y+SW;
+          body[2].x=this->x+SW;
+          body[2].y=this->y+SW;
+          body[3].x=this->x-SW;
+          body[3].y=this->y;
         break;
       }
     break;    
@@ -334,41 +347,20 @@ bool Piece::move(byte dir){
   }
   return true;
 }
-/*
-bool Piece::checkCollision(){ //return true if Piece collides with something
-  int temp = this->p1 ? 0:6+9*SW;
-  for (int i=0;i<4;i++){
-    if ((this->body[i].x>LB+temp+9*SW)||(this->body[i].x<LB+temp)||((this->body[i].y>63-SW)&&(this->body[i].y<127)) )
-      return true;
-    if (this->p1){
-      if (occupiedGridP1[getIndice(this->body[i].x,this->body[i].y,true)])
-        return true;
-    }
-    else {
-      if (occupiedGridP2[getIndice(this->body[i].x,this->body[i].y,false)])
-        return true;
-    }
-  }
-  return false;
-}
-*/
 
 bool Piece::checkCollision(){ //return true if Piece collides with something
   int temp = this->p1 ? 0:6+9*SW;
   for (int i=0;i<4;i++){
-    if ((this->body[i].x>LB+temp+9*SW)||(this->body[i].x<LB+temp)||((this->body[i].y>63-SW)&&(this->body[i].y<200)) )
+    if ((this->body[i].x>LB1+temp+9*SW)||(this->body[i].x<LB1+temp)||((this->body[i].y>63-SW)&&(this->body[i].y<127)) )
       return true;
     if (this->p1){
-      for (int j=0;j<NbStillSquaresP1;j++){
-        if ((this->body[i].x==stillSquaresP1[j].x)&&(this->body[i].y==stillSquaresP1[j].y))
-          return true;
+      if (occupiedGridP1[getIndice(this->body[i].x,this->body[i].y,true)]!=0){
+        return true;
       }
     }
     else {
-      for (int j=0;j<NbStillSquaresP2;j++){
-        if ((this->body[i].x==stillSquaresP2[j].x)&&(this->body[i].y==stillSquaresP2[j].y))
-          return true;
-      }
+      if (occupiedGridP2[getIndice(this->body[i].x,this->body[i].y,false)]!=0)
+        return true;
     }
   }
   return false;
@@ -392,24 +384,30 @@ void Piece::draw(){
 }
 
 void resetOccupiedGrids(){
-  /*
-  for (int i=0; i<160; i++){
-    occupiedGridP1[i]=false;
-    occupiedGridP2[i]=false;
+  
+  for (int i=0; i<GRID_TOT; i++){
+    occupiedGridP1[i]=0;
+    occupiedGridP2[i]=0;
   }
-  */
+  
 }
 
 int getIndice(int x, int y, bool p1){
-  int temp=p1 ? LB:LB+6+9*SW;
+  int temp=p1 ? LB1:LB2;
   temp=(x-temp)/4;
   temp+=(y-3)/4*10;
   return temp;
 }
+int getXfromI(int i, bool p1){
+  return ((p1?LB1:LB2)+i%10*SW);      
+}
+int getYfromI(int i){
+  return (upBorder+i/10*SW);
+}
 
 /*
 int getIndice(int x, int y){ //from 2PP
-  int temp=(x-LB)/casesLength;
+  int temp=(x-LB11)/casesLength;
   temp+=(y-upBorder)/casesHeight*casesCol;
   return temp;
 }

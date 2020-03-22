@@ -9,10 +9,14 @@
 #include "background.h"
 #include "game.h"
 #include "title.h"
+#include "menu.h"
 
 #define INTRO 1
 #define MENU 2
-#define GAME 3
+#define SETTINGS 3
+#define INFO 4
+#define CREDIT 5
+#define GAME 10
  
 //Piece p1(LB+3*SW,3,SHAPE_T, true);
 //Piece p1(LB,3,SHAPE_T, true);
@@ -55,56 +59,83 @@ void loop() {
       }
     break;
 
-    case MENU :
-      ab.println("controls");
-      ab.println("'Gift' enabled");
-      ab.println("speed  ");
-      ab.println("credit");
-    
-      if (ab.justPressed(A_BUTTON)){
-        
-        randomSeed(timer*987);
-        resetOccupiedGrids();
-        nextP1.shapeShift();
-        nextP1.update();
-        nextP2.shapeShift();
-        nextP2.update();  
-          
-        state=GAME;
-      }
-    break;    
+    case MENU :      
+     
+      switch (menu()){
+        case MENU_START:        
+          randomSeed(timer*987);
+          resetOccupiedGrids();
+          nextP1.shapeShift();
+          nextP1.update();
+          nextP2.shapeShift();
+          nextP2.update();  
+            
+          state=GAME;
+        break;
+        case MENU_INFO:
+            state=INFO;
+        break;
+        case MENU_CREDIT:
+            state=CREDIT;
+        break;
+        case MENU_SETTINGS:
+           state=SETTINGS;
+        break;
+        default:
+        break;
+      }      
+    break;
 
+    case SETTINGS :
+      if (MENU_BACK==settings()){
+        state=MENU;
+      }
+    break;
+    case INFO :
+      if (MENU_BACK==info()){
+        state=MENU;
+      }
+    break;
+    case CREDIT :
+      if (MENU_BACK==credit()){
+        state=MENU;
+      }
+    break;
     
     case GAME:
     
       playing(&p1, &p2, &nextP1, &nextP2);
     
       control(&p1);
-      //control(&p2);
+      control(&p2);
       
       nextP1.draw();
-      //nextP2.draw();
+      nextP2.draw();
       
       p1.update();
       p1.draw();
-      //p2.update();
-      //p2.draw();
+      p2.update();
+      p2.draw();
+      /*
       ab.setCursor(60,5);
       ab.print("bkLn: ");
       ab.print(blinkingLinesP1);      
       ab.setCursor(60,15);
-      ab.print("still: ");
-      ab.print(NbStillSquaresP1);
+      //ab.print("timer: ");
+      //ab.print(timer);
       ab.setCursor(60,25);
       ab.print("pos: ");
       ab.print(p1.x);
       ab.print(",");
       ab.print(p1.y);
-      
+      */
     break;   
     
     default :
       ab.print("oups... State not defined");
+      if (ab.justPressed(A_BUTTON)||(ab.justPressed(B_BUTTON))){
+        state=MENU;
+      }
     break;
   }
   ab.display();

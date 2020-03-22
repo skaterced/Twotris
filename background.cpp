@@ -9,8 +9,8 @@
 
 void drawBackground(){
   ab.fillRect(0,0,128,66,1);
-  ab.fillRect(LB,0,10*SW,63,0);
-  ab.fillRect(LB+6+9*SW,0,10*SW,63,0);
+  ab.fillRect(LB1,0,10*SW,63,0);
+  ab.fillRect(LB2,0,10*SW,63,0);
   
   //score
   affScore(true);
@@ -83,145 +83,103 @@ void zeroPrint(int score){
 }
 
 void drawStillSquares(){
-  for(int i=0;i<NbStillSquaresP1;i++){
-    stillSquaresP1[i].draw();
+Square StillSquaresDrawer(LB1,upBorder,0);
+
+  for(int i=0;i<GRID_TOT;i++){
+    if(occupiedGridP1[i]!=0){
+      StillSquaresDrawer.x=getXfromI(i,true);//(LB1+i%10*SW);
+      StillSquaresDrawer.y=getYfromI(i);//(upBorder+i/10*SW);
+      StillSquaresDrawer.type=occupiedGridP1[i];
+      StillSquaresDrawer.draw();
+    }
+    if(occupiedGridP2[i]!=0){
+      StillSquaresDrawer.x=getXfromI(i,false);//(LB2+i%10*SW);
+      StillSquaresDrawer.y=getYfromI(i);//(upBorder+i/10*SW);
+      StillSquaresDrawer.type=occupiedGridP2[i];
+      StillSquaresDrawer.draw();
+    }    
   }
-  for(int i=0;i<NbStillSquaresP2;i++){
-    stillSquaresP2[i].draw();
-  }  
 }
 
 void checkFullLines(byte minY, byte maxY, bool p1){ //let's start again
   int nbSameY[4]={0,0,0,0};
-  if (p1&&blinkingLinesP1!=0){ //this should not happend
+  int temp;
+  //if (p1&&blinkingLinesP1!=0){ //this should not happend
+  /*if(false){
     ab.clear();
-    ab.print("Error Blinking=");
-    ab.print(blinkingLinesP1);
+    ab.print("minY=");
+    ab.print(minY);
     ab.display();
-    delay(3000);
-  }
-  for(int j=0; j<(maxY-minY)/SW+1; j++){
-    for(int i=0;i<NbStillSquaresP1;i++){
-      if (stillSquaresP1[i].y==minY+j*SW) {
-        nbSameY[j]++;
-      }
-    }
-    if (10==nbSameY[j]){
-      blinkingLinesP1+=1<<(14-((minY-3)/SW+j));  // less significant bit is bottom line
-      BlinkingP1=10;
-    }
-  }
-  
-  if (0==blinkingLinesP1)
-    blinkingLinesP1=-1;
-  // Add test for P2
-}
-/*
-void checkFullLines(byte minY, byte maxY, bool p1){ // BUG ! Full Lines are not necessary adjacent
-
-  int nbSameY[4]={0,0,0,0};
-  int minYtoRemove=66;
-  byte widthOfRemoval=0;
-  
+    delay(500);
+  }*/
   if (p1){
     for(int j=0; j<(maxY-minY)/SW+1; j++){
-      for(int i=0;i<NbStillSquaresP1;i++){
-    //stillSquaresP1[i].draw();
-        if (stillSquaresP1[i].y==minY+j*SW) {
+      temp=getIndice(LB1,minY+j*SW,true);
+      for(int i=temp;i<temp+10;i++){
+        if (occupiedGridP1[i]!=0) {
           nbSameY[j]++;
         }
       }
       if (10==nbSameY[j]){
-        if (minYtoRemove>minY+j*SW){
-          minYtoRemove=minY+j*SW;
+        //blinkingLinesP1+=1<<(14-((minY-3)/SW+j));  // less significant bit is bottom line
+        blinkingLinesP1+=1; //was used to transmit wich lines was blinking. Now it just has to be >0 -> used for score now
+        for(int i=temp;i<temp+10;i++){
+          occupiedGridP1[i]=TYPE_BLINKING;
         }
-        widthOfRemoval++;
+        BlinkingTimerP1=10;
       }
-    }
-    
-    if (66!=minYtoRemove){
-      blinkingLinesP1=(minYtoRemove<<3)+widthOfRemoval;
-      BlinkingP1=10;
-      scoreP1+=widthOfRemoval*3;
-    }
-    else
+    }  
+    if (0==blinkingLinesP1)
       blinkingLinesP1=-1;
+    else
+      scoreP1+=blinkingLinesP1*blinkingLinesP1;   
   }
-  else { //same for p2
+  else { //p2
     for(int j=0; j<(maxY-minY)/SW+1; j++){
-      for(int i=0;i<NbStillSquaresP2;i++){
-    //stillSquaresP1[i].draw();
-        if (stillSquaresP2[i].y==minY+j*SW) {
+      temp=getIndice(LB2,minY+j*SW,false);
+      for(int i=temp;i<temp+10;i++){
+        if (occupiedGridP2[i]!=0) {
           nbSameY[j]++;
         }
       }
       if (10==nbSameY[j]){
-        if (minYtoRemove>minY+j*SW){
-          minYtoRemove=minY+j*SW;
+        blinkingLinesP2+=1;//<<(14-((minY-3)/SW+j));  // less significant bit is bottom line
+        for(int i=temp;i<temp+10;i++){
+          occupiedGridP2[i]=TYPE_BLINKING;
         }
-        widthOfRemoval++;
+        BlinkingTimerP2=10;
       }
-    }
-    
-    if (66!=minYtoRemove){
-      blinkingLinesP2=(minYtoRemove<<3)+widthOfRemoval;
-      BlinkingP2=10;
-      scoreP2+=widthOfRemoval*3;
-    }
+    }  
+    if (0==blinkingLinesP2)
+      blinkingLinesP2=-1;
     else
-      blinkingLinesP2=-1;    
+      scoreP2+=blinkingLinesP2*blinkingLinesP2;
   }
 }
-*/
-void removeBlinkingLines(bool p1){
 
+void removeBlinkingLines(bool p1){
   if (p1){
-    int temp=blinkingLinesP1&511;
-    //ab.fillRect(LB,3+i*SW,10*SW,SW,1);
-    for (int k=0; k<15; k++){
-      if (1==temp&1){
-        for(int i=0; i<NbStillSquaresP1; i++){
-          while((59-k*SW)==stillSquaresP1[i].y){
-            if (i==NbStillSquaresP1-1){
-              stillSquaresP1[i].y=0;
-              stillSquaresP1[i].type=0;
-            }
-            for (int j=i;j<NbStillSquaresP1-1;j++){
-              stillSquaresP1[j]=stillSquaresP1[j+1];
-            }
-            NbStillSquaresP1--;
-          }
-        if (stillSquaresP2[i].y<59-k*SW){
-          stillSquaresP2[i].y+=SW;
-      }
-        }
-        temp=temp>>1;
-      }
-    }
-  } 
-  else {/*same for p2**/
-    int width=blinkingLinesP2&7;
-    int minY=blinkingLinesP2>>3;
-    /*
-    int temp=getIndice(LB+6+9*SW,minY,false);
-    for (int i=temp+width*10;i>=0;i--){      
-      if ((i-width*10)>=0){
-        occupiedGridP2[i]=occupiedGridP2[i-width*10];  
-      }
-      else
-        occupiedGridP1[i]=false;  
-    }*/
-      for(int i=0; i<NbStillSquaresP2; i++){
-      while((minY<=stillSquaresP2[i].y)&&(stillSquaresP2[i].y<=(minY+(width-1)*SW))){
-        for (int j=i;j<NbStillSquaresP2;j++){
-          stillSquaresP2[j]=stillSquaresP2[j+1];
+    for (int i=GRID_TOT-1;i>=0;i--){
+      while (TYPE_BLINKING==occupiedGridP1[i]){
+        for (int j=i;j>=0;j--){
+          if (j-10<0)
+            occupiedGridP1[j]=0;
+          else
+            occupiedGridP1[j]=occupiedGridP1[j-10];
         }
       }
-      //warning, could be moved twice ?
-      if (stillSquaresP2[i].y<minY){
-        stillSquaresP2[i].y+=width*SW;
-      }
     }
-    NbStillSquaresP2-=width*10;
   }
+  else { //p2
+    for (int i=GRID_TOT-1;i>=0;i--){
+      while (TYPE_BLINKING==occupiedGridP2[i]){
+        for (int j=i;j>=0;j--){
+          if (j-10<0)
+            occupiedGridP2[j]=0;
+          else
+            occupiedGridP2[j]=occupiedGridP2[j-10];
+        }
+      }
+    }
+  }  
 }

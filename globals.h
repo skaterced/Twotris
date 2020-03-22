@@ -4,7 +4,11 @@
 #include <Arduboy2.h>
 #include "square.h"
 
-#define LB 23 //left border 
+#define LB1 23 //left border 
+#define LB2 LB1+2+10*SW
+
+#define GRID_TOT 150
+#define upBorder 3
 
 #define TL1 30 // Title line 1
 #define TL2 TL1-SW // Title line 1
@@ -17,11 +21,16 @@
 
 #define TR1 -3 // Title Row 1
 
-
 #define MOVE_RIGHT 1
 #define MOVE_DOWN 2
 #define MOVE_LEFT 3
 #define MAXS 110
+
+#define MENU_START 1
+#define MENU_SETTINGS 2
+#define MENU_INFO 3
+#define MENU_CREDIT 4
+#define MENU_BACK 9
 
 extern Arduboy2 ab;
 extern int timer;
@@ -37,17 +46,19 @@ extern bool p1GoesToTheRight;
 extern bool p2GoesToTheRight;
 extern int blinkingLinesP1;
 extern int blinkingLinesP2;
-extern int BlinkingP1;
-extern int BlinkingP2;
+extern int BlinkingTimerP1;
+extern int BlinkingTimerP2;
 extern int scoreP1;
 extern int scoreP2;
-//extern bool occupiedGridP1[160];
-//extern bool occupiedGridP2[160];
-extern int NbStillSquaresP1;
-extern int NbStillSquaresP2;
-extern class Square stillSquaresP1 [MAXS];
-extern class Square stillSquaresP2 [MAXS];
+extern byte occupiedGridP1[GRID_TOT];
+extern byte occupiedGridP2[GRID_TOT];
+//extern int NbStillSquaresP1;
+//extern int NbStillSquaresP2;
+//extern class Square stillSquaresP1 [MAXS];
+//extern class Square stillSquaresP2 [MAXS];
 
-extern bool GIFT;
-
+extern byte globalSettings;
+/*       
+    bit 0: Gift enabled, bit 1: grid P2, bit 2: grid P1
+*/
 #endif

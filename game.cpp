@@ -21,7 +21,7 @@ void control(Piece* P){
   if (P->p1){
     if (ab.pressed(P1_TURN)){
       if (++buttonTimerTurnP1>TURN_BUTTON_TRIGGER){
-        buttonTimerTurnP1=0;
+        buttonTimerTurnP1=-3;
         while (P->move(MOVE_DOWN));
         P->stick();
         return;
@@ -54,7 +54,7 @@ void control(Piece* P){
   else {// do the same for p2...
     if (ab.pressed(P2_TURN)){
       if (++buttonTimerTurnP2>TURN_BUTTON_TRIGGER){
-        buttonTimerTurnP2=0;
+        buttonTimerTurnP2=-3;
         while (P->move(MOVE_DOWN));
         P->stick();
         return;
@@ -90,16 +90,25 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
 
   drawBackground();
   
-  //check if blinkingLines
   if (0!=blinkingLinesP1){
     
     if (-1==blinkingLinesP1){ // new Piece
       blinkingLinesP1=0;
       p1->reInit(nextP1->shape);
+      p1->orientation=0;
       p1->update();
       if (p1->checkCollision()){ //game over
         //ab.display();
         blinkingLinesP1=-2;
+        for (int i=0; i<4;i++){
+          ab.clear();
+          ab.print("x:");
+          ab.print(p1->body[i].x);
+          ab.print(" y:");
+          ab.println(p1->body[i].y);          
+        }
+        ab.display();
+        delay(500);
       }
       //p1.shape=nextP1.shape;
       for (int i=0; i<4; i++){
@@ -109,35 +118,84 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
       nextP1->update();
     }
     else if (blinkingLinesP1>0){
-      int temp=blinkingLinesP1&511;
-      for (int i=0; i<15; i++){ //lineNb 0=bottom, 15 is top
-        if (1==temp&1){
-          if (0==BlinkingP1%2)
-            ab.fillRect(LB,59-i*SW,10*SW,SW,1);
-          else
-            ab.fillRect(LB,59-i*SW,10*SW,SW,0);
-        }
-        temp=temp>>1;
+
+      if (0==BlinkingTimerP1--){
+        removeBlinkingLines(true);
+        blinkingLinesP1=-1;
       }
+    }
+  }
+  else {
+      //if (ab.everyXFrames(fallingTimeP1)){
+    if (0==fallingTimerP1--){
+      fallingTimerP1=fallingTimerInitP1;
+      if (!p1->move(MOVE_DOWN)){
+        p1->stick();
+        randomSeed(timer*321);
+      }
+    }
+  }
+  
+  if (0!=blinkingLinesP2){
+    
+    if (-1==blinkingLinesP2){ // new Piece
+      blinkingLinesP2=0;
+      p2->reInit(nextP2->shape);
+      p2->orientation=0;
+      p2->update();
+      if (p2->checkCollision()){ //game over
+        //ab.display();
+        blinkingLinesP2=-2;
+        for (int i=0; i<4;i++){
+          ab.clear();
+          ab.print("x:");
+          ab.print(p2->body[i].x);
+          ab.print(" y:");
+          ab.println(p2->body[i].y);          
+        }
+        ab.display();
+        delay(500);
+      }
+      //p1.shape=nextP1.shape;
+      for (int i=0; i<4; i++){
+        p2->body[i].type=nextP2->body[i].type;
+      }
+      nextP2->shapeShift();
+      nextP2->update();
+    }
+    else if (blinkingLinesP2>0){
+
+      if (0==BlinkingTimerP2--){
+        removeBlinkingLines(false);
+        blinkingLinesP2=-1;
+      }
+    }
+  }
+  else {
+      //if (ab.everyXFrames(fallingTimeP1)){
+    if (0==fallingTimerP2--){
+      fallingTimerP2=fallingTimerInitP2;
+      if (!p2->move(MOVE_DOWN)){
+        p2->stick();
+        randomSeed(timer*321);
+      }
+    }
+  }  
+}
+    /*
+    else if (blinkingLinesP1>0){
+      byte width=blinkingLinesP1&7;
+      if (0==BlinkingP1%2)
+        ab.fillRect(LB1,blinkingLinesP1>>3,10*SW,width*SW,1);
+      else 
+        ab.fillRect(LB1,blinkingLinesP1>>3,10*SW,width*SW,0);
       if (0==BlinkingP1--){
         removeBlinkingLines(true);
         blinkingLinesP1=-1;
       }
     }
-    /*
-    else if (blinkingLinesP1>0){
-      byte width=blinkingLinesP1&7;
-      if (0==BlinkingP1%2)
-        ab.fillRect(LB,blinkingLinesP1>>3,10*SW,width*SW,1);
-      else 
-        ab.fillRect(LB,blinkingLinesP1>>3,10*SW,width*SW,0);
-      if (0==BlinkingP1--){
-        removeBlinkingLines(true);
-        blinkingLinesP1=-1;
-      }
-    }*/
     else { //BlinkingP1== -2 or less
-        ab.setCursor(LB-7,30);
+        ab.setCursor(LB1-7,30);
         ab.println("Busted !");
     }
   }
@@ -173,9 +231,9 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
     else if (blinkingLinesP2>0){
       byte width=blinkingLinesP2&7;
       if (0==BlinkingP2%2)
-        ab.fillRect(LB+6+9*SW,blinkingLinesP2>>3,10*SW,width*SW,1);
+        ab.fillRect(LB2,blinkingLinesP2>>3,10*SW,width*SW,1);
       else 
-        ab.fillRect(LB+6+9*SW,blinkingLinesP2>>3,10*SW,width*SW,0);
+        ab.fillRect(LB2,blinkingLinesP2>>3,10*SW,width*SW,0);
       if (0==BlinkingP2--){
         removeBlinkingLines(false);
         blinkingLinesP2=-1;
@@ -199,3 +257,4 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
     }
   }
 }
+*/
