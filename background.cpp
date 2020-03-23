@@ -169,6 +169,24 @@ void removeBlinkingLines(bool p1){
         }
       }
     }
+    if (1==globalSettings&1){ //'gift'
+      if (--blinkingLinesP1>0){
+        int temp=blinkingLinesP1*10;
+        for (int i=0; i<GRID_TOT-temp; i++) {
+          if (i-temp>=0){
+            occupiedGridP2[i-temp]=occupiedGridP2[i];
+          }
+        }
+        for (int i=GRID_TOT-1; i>GRID_TOT-temp; i--) { 
+          occupiedGridP2[i]=TYPE_FILLED;
+        }
+        temp=random(10);
+        for (int i=GRID_TOT-1; i>GRID_TOT-1-blinkingLinesP1; i--){ //remove a column
+          occupiedGridP2[i+temp]=TYPE_EMPTY;
+        }
+      }
+    }
+    blinkingLinesP1=0;
   }
   else { //p2
     for (int i=GRID_TOT-1;i>=0;i--){

@@ -12,13 +12,13 @@ byte menu(){
   Square curSquare(2,SBL*menuCursor+1,TYPE_SIMPLE);
   
   ab.setCursor(LI,SBL*1);
-  ab.print("Play");
+  ab.print(F("Play"));
   ab.setCursor(LI,SBL*2);
-  ab.println("Settings");
+  ab.println(F("Settings"));
   ab.setCursor(LI,SBL*3);
-  ab.println("Info");
+  ab.println(F("Info"));
   ab.setCursor(LI,SBL*4);
-  ab.println("Credit"); 
+  ab.println(F("Credit")); 
 
   curSquare.draw();
 
@@ -47,32 +47,32 @@ byte settings(){
   Square curSquare(2,SBL*settingsCursor+1,TYPE_SLASH);
 
   ab.setCursor(LI,SBL*1);
-  ab.print("'Gift'    ");
+  ab.print(F("'Gift'    "));
   if (globalSettings&1)
-    ab.print("Enabled");
+    ab.print(F("Enabled"));
   else
-    ab.print("Disabled");
+    ab.print(F("Disabled"));
       
   ab.setCursor(LI,SBL*2);
-  ab.print("Grid for P1   ");
+  ab.print(F("Grid for P1   "));
   if (globalSettings&4)
-    ab.print("On");
+    ab.print(F("On"));
   else
-    ab.print("Off");
+    ab.print(F("Off"));
     
   ab.setCursor(LI,SBL*3);
-  ab.print("Grid for P2   ");
+  ab.print(F("Grid for P2   "));
   if (globalSettings&2)
-    ab.print("On");
+    ab.print(F("On"));
   else
-    ab.print("Off");
+    ab.print(F("Off"));
   
   ab.setCursor(LI,SBL*4);
-  ab.print("P1 Speed      ");
+  ab.print(F("P1 Speed      "));
   ab.print(21-fallingTimerInitP1);
 
   ab.setCursor(LI,SBL*5);
-  ab.print("P2 Speed      ");
+  ab.print(F("P2 Speed      "));
   ab.print(21-fallingTimerInitP2);  
 
   curSquare.draw();
@@ -146,15 +146,15 @@ byte settings(){
 }
 
 byte info(){
-  ab.println("Move until you reach");
-  ab.println("a border to change");
-  ab.println("moving direction");
+  ab.println(F("Move until you reach"));
+  ab.println(F("a border to change"));
+  ab.println(F("moving direction"));
   //ab.println("It turn clockwise only");
-  ab.println("Hold 'turn' to drop");
-  ab.println("");
-  ab.println("P1 Turn:Up P1 Move:Down");
-  ab.println("P2 Turn:A  P2 Move:B");
-  ab.print("Pause: Left");
+  ab.println(F("Hold 'turn' to drop"));
+  ab.println(F(""));
+  ab.println(F("P1 Turn:Up P1 Move:Down"));
+  ab.println(F("P2 Turn:A  P2 Move:B"));
+  ab.print(F("Pause: Left"));
   //ab.drawChar(30,40,23,1,1,0);
   //ab.drawChar(60,40,24,1,1,0);
   
@@ -165,12 +165,12 @@ byte info(){
 }
 
 byte credit(){
-  ab.println("       TWOTRIS");
-  ab.println("");
-  ab.println("written by");
-  ab.println("    Cedric Martin");
-  ab.println("");
-  ab.println("March 2020");
+  ab.println(F("       TWOTRIS"));
+  ab.println(F(""));
+  ab.println(F("written by"));
+  ab.println(F("    C" "\x82" "dric Martin"));
+  ab.println(F(""));
+  ab.println(F("March 2020"));
   
   if (ab.justPressed(B_BUTTON)){
     return MENU_BACK;     

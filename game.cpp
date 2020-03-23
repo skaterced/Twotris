@@ -100,6 +100,7 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
       if (p1->checkCollision()){ //game over
         //ab.display();
         blinkingLinesP1=-2;
+        /*
         for (int i=0; i<4;i++){
           ab.clear();
           ab.print("x:");
@@ -109,6 +110,7 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
         }
         ab.display();
         delay(500);
+        */
       }
       //p1.shape=nextP1.shape;
       for (int i=0; i<4; i++){
@@ -123,6 +125,10 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
         removeBlinkingLines(true);
         blinkingLinesP1=-1;
       }
+    }
+    else { //BlinkingP1== -2 or less
+      ab.setCursor(LB1-7,30);
+      ab.print("Busted !");
     }
   }
   else {
@@ -146,6 +152,7 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
       if (p2->checkCollision()){ //game over
         //ab.display();
         blinkingLinesP2=-2;
+        /*
         for (int i=0; i<4;i++){
           ab.clear();
           ab.print("x:");
@@ -154,7 +161,7 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
           ab.println(p2->body[i].y);          
         }
         ab.display();
-        delay(500);
+        delay(500);*/
       }
       //p1.shape=nextP1.shape;
       for (int i=0; i<4; i++){
@@ -170,6 +177,10 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
         blinkingLinesP2=-1;
       }
     }
+    else { //BlinkingP1== -2 or less
+      ab.setCursor(65,30);
+      ab.print("Busted !");
+    }
   }
   else {
       //if (ab.everyXFrames(fallingTimeP1)){
@@ -180,7 +191,7 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
         randomSeed(timer*321);
       }
     }
-  }  
+  } 
 }
     /*
     else if (blinkingLinesP1>0){
