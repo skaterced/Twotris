@@ -25,18 +25,25 @@ void drawBackground(){
   ab.fillRect(3,4,4*SW,5*SW,0);
   ab.fillRect(109,4,4*SW,5*SW,0);
 
-  /*
-  //debug
-  int temp=0;
-  for (int i=0; i<160;i++){
-    if (occupiedGridP1[i])
-      temp++;
+  if((globalSettings&4)==4){ //P1 Grid
+    for (int i=0; i<9; i++){
+      for (int j=0; j<15; j++){
+        ab.drawPixel(LB1+i*SW,UP_BORDER+j*SW,1);
+      }
+    }
   }
-    ab.setCursor(75,30);
-    ab.print(temp);
-*/
-  //
+  if((globalSettings&2)==2){ //P2 Grid
+    for (int i=0; i<9; i++){
+      for (int j=0; j<15; j++){
+        ab.drawPixel(LB2+i*SW,UP_BORDER+j*SW,1);
+      }
+    }
+  }  
   drawStillSquares();
+
+  /*//debug
+  ab.print(globalSettings);
+  */
 }
 
 void affScore(bool P1){
@@ -45,7 +52,7 @@ void affScore(bool P1){
       ab.setCursor(3,44);
       ab.print(scoreP1/1000);      
       ab.setCursor(9,44);
-      ab.print("K+");
+      ab.print(F("K+"));
 
       ab.setCursor(3,52);
       zeroPrint(scoreP1-1000);
@@ -60,7 +67,7 @@ void affScore(bool P1){
       ab.setCursor(107,44);
       ab.print(scoreP2/1000);      
       ab.setCursor(113,44);
-      ab.print("K+");
+      ab.print(F("K+"));
 
       ab.setCursor(107,52);
       zeroPrint(scoreP2-1000);
@@ -74,16 +81,16 @@ void affScore(bool P1){
 
 void zeroPrint(int score){
   if (score<10){
-    ab.print("00");    
+    ab.print(F("00"));    
   }
   else if (score <100){
-    ab.print("0");  
+    ab.print(F("0"));  
   }
   ab.print (score);
 }
 
 void drawStillSquares(){
-Square StillSquaresDrawer(LB1,upBorder,0);
+Square StillSquaresDrawer(LB1,UP_BORDER,0);
 
   for(int i=0;i<GRID_TOT;i++){
     if(occupiedGridP1[i]!=0){
@@ -107,7 +114,7 @@ void checkFullLines(byte minY, byte maxY, bool p1){ //let's start again
   //if (p1&&blinkingLinesP1!=0){ //this should not happend
   /*if(false){
     ab.clear();
-    ab.print("minY=");
+    ab.print(F("minY=");
     ab.print(minY);
     ab.display();
     delay(500);
@@ -131,8 +138,6 @@ void checkFullLines(byte minY, byte maxY, bool p1){ //let's start again
     }  
     if (0==blinkingLinesP1)
       blinkingLinesP1=-1;
-    else
-      scoreP1+=blinkingLinesP1*blinkingLinesP1;   
   }
   else { //p2
     for(int j=0; j<(maxY-minY)/SW+1; j++){
@@ -143,7 +148,7 @@ void checkFullLines(byte minY, byte maxY, bool p1){ //let's start again
         }
       }
       if (10==nbSameY[j]){
-        blinkingLinesP2+=1;//<<(14-((minY-3)/SW+j));  // less significant bit is bottom line
+        blinkingLinesP2+=1;//<<(14-((minY-UP_BORDER)/SW+j));  // less significant bit is bottom line
         for(int i=temp;i<temp+10;i++){
           occupiedGridP2[i]=TYPE_BLINKING;
         }
@@ -152,8 +157,6 @@ void checkFullLines(byte minY, byte maxY, bool p1){ //let's start again
     }  
     if (0==blinkingLinesP2)
       blinkingLinesP2=-1;
-    else
-      scoreP2+=blinkingLinesP2*blinkingLinesP2;
   }
 }
 
@@ -166,23 +169,6 @@ void removeBlinkingLines(bool p1){
             occupiedGridP1[j]=0;
           else
             occupiedGridP1[j]=occupiedGridP1[j-10];
-        }
-      }
-    }
-    if (1==globalSettings&1){ //'gift'
-      if (--blinkingLinesP1>0){
-        int temp=blinkingLinesP1*10;
-        for (int i=0; i<GRID_TOT-temp; i++) {
-          if (i-temp>=0){
-            occupiedGridP2[i-temp]=occupiedGridP2[i];
-          }
-        }
-        for (int i=GRID_TOT-1; i>GRID_TOT-temp; i--) { 
-          occupiedGridP2[i]=TYPE_FILLED;
-        }
-        temp=random(10);
-        for (int i=GRID_TOT-1; i>GRID_TOT-1-blinkingLinesP1; i--){ //remove a column
-          occupiedGridP2[i+temp]=TYPE_EMPTY;
         }
       }
     }

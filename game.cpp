@@ -13,7 +13,7 @@
 void control(Piece* P){
   if (ab.justPressed(LEFT_BUTTON)){
     ab.setCursor(40,30);
-    ab.print("* pause *");
+    ab.print(F("* pause *"));
     ab.display();
     delay(100);
     while(!ab.pressed(LEFT_BUTTON));
@@ -100,17 +100,6 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
       if (p1->checkCollision()){ //game over
         //ab.display();
         blinkingLinesP1=-2;
-        /*
-        for (int i=0; i<4;i++){
-          ab.clear();
-          ab.print("x:");
-          ab.print(p1->body[i].x);
-          ab.print(" y:");
-          ab.println(p1->body[i].y);          
-        }
-        ab.display();
-        delay(500);
-        */
       }
       //p1.shape=nextP1.shape;
       for (int i=0; i<4; i++){
@@ -119,16 +108,39 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
       nextP1->shapeShift();
       nextP1->update();
     }
-    else if (blinkingLinesP1>0){
-
+    else if (blinkingLinesP1>0){  
       if (0==BlinkingTimerP1--){
-        removeBlinkingLines(true);
+        int temp=blinkingLinesP1*blinkingLinesP1;                       // score P1
+        if ((scoreP1+temp)/SPEED_THRESHOLD>scoreP1/SPEED_THRESHOLD){
+          if (fallingTimerInitP1>MAX_SPEED)
+            fallingTimerInitP1--;
+        }
+        scoreP1+=blinkingLinesP1*blinkingLinesP1;          
+        if (1==(globalSettings&1)){         //   ****   'gift'
+          if (--blinkingLinesP1>0){
+            int temp=blinkingLinesP1*10;
+            for (int i=0; i<GRID_TOT; i++) {
+              if (i-temp>=0){
+                occupiedGridP2[i-temp]=occupiedGridP2[i];
+              }
+            }
+            for (int i=GRID_TOT-1; i>=GRID_TOT-temp; i--) { 
+              occupiedGridP2[i]=TYPE_FILLED;
+            }
+            temp=random(10);            
+            for (int i=GRID_TOT-1; i>GRID_TOT-1-blinkingLinesP1*10; i-=10){ //remove a column from the gift
+              occupiedGridP2[i-temp]=TYPE_EMPTY;
+            }
+          }
+          p2->y-=blinkingLinesP1*SW;
+        }
+        removeBlinkingLines(true);     
         blinkingLinesP1=-1;
       }
     }
     else { //BlinkingP1== -2 or less
       ab.setCursor(LB1-7,30);
-      ab.print("Busted !");
+      ab.print(F("Busted !"));
     }
   }
   else {
@@ -170,16 +182,39 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
       nextP2->shapeShift();
       nextP2->update();
     }
-    else if (blinkingLinesP2>0){
-
+    else if (blinkingLinesP2>0){ 
       if (0==BlinkingTimerP2--){
+        int temp=blinkingLinesP2*blinkingLinesP2;                  // score P2
+        if ((scoreP2+temp)/SPEED_THRESHOLD>scoreP2/SPEED_THRESHOLD){
+          if (fallingTimerInitP2>MAX_SPEED)
+            fallingTimerInitP2--;
+        }
+        scoreP2+=blinkingLinesP2*blinkingLinesP2;           
+        if (1==(globalSettings&1)){         //   ****   'gift'
+          if (--blinkingLinesP2>0){
+            int temp=blinkingLinesP2*10;
+            for (int i=0; i<GRID_TOT; i++) {
+              if (i-temp>=0){
+                occupiedGridP1[i-temp]=occupiedGridP1[i];
+              }
+            }
+            for (int i=GRID_TOT-1; i>=GRID_TOT-temp; i--) { 
+              occupiedGridP1[i]=TYPE_FILLED;
+            }
+            temp=random(10);            
+            for (int i=GRID_TOT-1; i>GRID_TOT-1-blinkingLinesP2*10; i-=10){ //remove a column
+              occupiedGridP1[i-temp]=TYPE_EMPTY;
+            }
+          }
+          p1->y-=blinkingLinesP2*SW;
+        }        
         removeBlinkingLines(false);
         blinkingLinesP2=-1;
       }
     }
     else { //BlinkingP1== -2 or less
       ab.setCursor(65,30);
-      ab.print("Busted !");
+      ab.print(F("Busted !"));
     }
   }
   else {
@@ -193,79 +228,3 @@ void playing(Piece* p1, Piece* p2, Piece* nextP1, Piece* nextP2){
     }
   } 
 }
-    /*
-    else if (blinkingLinesP1>0){
-      byte width=blinkingLinesP1&7;
-      if (0==BlinkingP1%2)
-        ab.fillRect(LB1,blinkingLinesP1>>3,10*SW,width*SW,1);
-      else 
-        ab.fillRect(LB1,blinkingLinesP1>>3,10*SW,width*SW,0);
-      if (0==BlinkingP1--){
-        removeBlinkingLines(true);
-        blinkingLinesP1=-1;
-      }
-    }
-    else { //BlinkingP1== -2 or less
-        ab.setCursor(LB1-7,30);
-        ab.println("Busted !");
-    }
-  }
-  else {
-      //if (ab.everyXFrames(fallingTimeP1)){
-    if (0==fallingTimerP1--){
-      fallingTimerP1=fallingTimerInitP1;
-      if (!p1->move(MOVE_DOWN)){
-        p1->stick();
-        randomSeed(timer*321);
-      }
-    }
-  }
-  if (0!=blinkingLinesP2){ //same for P2
-    
-    if (-1==blinkingLinesP2){ 
-      blinkingLinesP2=0;
-      p2->reInit(nextP2->shape);
-      p2->update();
-      if (p2->checkCollision()){ //game over
-        ab.setCursor(74,30);
-        ab.println(" Busted !");
-        ab.display();
-        blinkingLinesP2=-2;
-      }
-      //p1.shape=nextP2.shape;
-      for (int i=0; i<4; i++){
-        p2->body[i].type=nextP2->body[i].type;
-      }
-      nextP2->shapeShift();
-      nextP2->update();
-    }
-    else if (blinkingLinesP2>0){
-      byte width=blinkingLinesP2&7;
-      if (0==BlinkingP2%2)
-        ab.fillRect(LB2,blinkingLinesP2>>3,10*SW,width*SW,1);
-      else 
-        ab.fillRect(LB2,blinkingLinesP2>>3,10*SW,width*SW,0);
-      if (0==BlinkingP2--){
-        removeBlinkingLines(false);
-        blinkingLinesP2=-1;
-      }
-    }
-    else {
-      ab.setCursor(65,30);
-      if (blinkingLinesP2==-2)
-        ab.println("Busted!");
-      else 
-        ab.println("Array filled!");
-    }
-  }
-  else {
-      //if (ab.everyXFrames(fallingTimeP1)){
-    if (0==fallingTimerP2--){
-      fallingTimerP2=fallingTimerInitP2;
-      if (!p2->move(MOVE_DOWN)){
-        p2->stick();
-      }
-    }
-  }
-}
-*/

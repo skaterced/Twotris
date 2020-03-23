@@ -8,7 +8,10 @@
 #define LB2 LB1+2+10*SW
 
 #define GRID_TOT 150
-#define upBorder 3
+#define UP_BORDER 3
+
+#define MAX_SPEED 4  //the less, the faster
+#define SPEED_THRESHOLD 50
 
 #define TL1 30 // Title line 1
 #define TL2 TL1-SW // Title line 1

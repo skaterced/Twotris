@@ -45,7 +45,7 @@ void Square::draw(){
 void Piece::reInit(byte shape){
   this->shape=shape;
   this->x= p1? LB1:LB2;
-  this->y= 3;
+  this->y= UP_BORDER;
   this->orientation=0; //depends... todo check
   if (p1)
     p1GoesToTheRight=true;
@@ -395,14 +395,14 @@ void resetOccupiedGrids(){
 int getIndice(int x, int y, bool p1){
   int temp=p1 ? LB1:LB2;
   temp=(x-temp)/4;
-  temp+=(y-3)/4*10;
+  temp+=(y-UP_BORDER)/4*10;
   return temp;
 }
 int getXfromI(int i, bool p1){
   return ((p1?LB1:LB2)+i%10*SW);      
 }
 int getYfromI(int i){
-  return (upBorder+i/10*SW);
+  return (UP_BORDER+i/10*SW);
 }
 
 /*

@@ -69,11 +69,11 @@ byte settings(){
   
   ab.setCursor(LI,SBL*4);
   ab.print(F("P1 Speed      "));
-  ab.print(21-fallingTimerInitP1);
+  ab.print((22-fallingTimerInitP1)/2);
 
   ab.setCursor(LI,SBL*5);
   ab.print(F("P2 Speed      "));
-  ab.print(21-fallingTimerInitP2);  
+  ab.print((22-fallingTimerInitP2)/2);  
 
   curSquare.draw();
 
@@ -91,15 +91,15 @@ byte settings(){
   if (ab.justPressed(LEFT_BUTTON)){   
     if (4==settingsCursor){
         if (fallingTimerInitP1<20)
-          fallingTimerInitP1++;
+          fallingTimerInitP1+=2;
         else
-          fallingTimerInitP1=5; //max speed
+          fallingTimerInitP1=MAX_SPEED;
     }
     else if (5==settingsCursor){
         if (fallingTimerInitP2<20)
-          fallingTimerInitP2++;
+          fallingTimerInitP2+=2;
         else
-          fallingTimerInitP2=5; //max speed
+          fallingTimerInitP2=MAX_SPEED;
     }
   }
   if (ab.justPressed(A_BUTTON)||ab.justPressed(RIGHT_BUTTON)){
@@ -123,14 +123,14 @@ byte settings(){
           globalSettings|=4;
       break; 
       case 4:
-        if (fallingTimerInitP1>5)
-          fallingTimerInitP1--;
+        if (fallingTimerInitP1>MAX_SPEED)
+          fallingTimerInitP1-=2;
         else
           fallingTimerInitP1=fallingTimerP1; //default=20
       break;
       case 5:
-        if (fallingTimerInitP2>5)
-          fallingTimerInitP2--;
+        if (fallingTimerInitP2>MAX_SPEED)
+          fallingTimerInitP2-=2;
         else
           fallingTimerInitP2=fallingTimerP1; //default=20
       break;      
@@ -181,4 +181,3 @@ byte credit(){
 /*
   ab.println("'Gift' enabled");
   ab.println("speed  ");*/
-

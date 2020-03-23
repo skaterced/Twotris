@@ -132,7 +132,7 @@ void loop() {
     break;   
     
     default :
-      ab.print("oups... State not defined");
+      ab.print(F("oups... State not defined"));
       if (ab.justPressed(A_BUTTON)||(ab.justPressed(B_BUTTON))){
         state=MENU;
       }
