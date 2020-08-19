@@ -7,6 +7,30 @@
 //#include "Tinyfont.h"
 //Tinyfont tinyfont = Tinyfont(ab.sBuffer, Arduboy2::width(), Arduboy2::height());
 
+void drawBackground1P(){
+  ab.fillRect(0,0,128,66,1);
+  ab.fillRect(LB1,0,10*SW,63,0);
+  ab.fillRect(LB2+3,4,58,58,0);
+  
+  //score
+  affScore(true);
+  //affScore(false);
+  
+  //next
+  ab.fillRect(3,4,4*SW,5*SW,0);
+  //ab.fillRect(109,4,4*SW,5*SW,0);
+
+  if((globalSettings&4)==4){ //P1 Grid
+    for (int i=0; i<9; i++){
+      for (int j=0; j<15; j++){
+        ab.drawPixel(LB1+(1+i)*SW,UP_BORDER+j*SW,1);
+      }
+    }
+  }
+
+  drawStillSquares();
+}
+
 void drawBackground(){
   ab.fillRect(0,0,128,66,1);
   ab.fillRect(LB1,0,10*SW,63,0);
@@ -47,21 +71,34 @@ void drawBackground(){
 }
 
 void affScore(bool P1){
-  if (P1){    
-    if (scoreP1>=1000){
-      ab.setCursor(3,44);
-      ab.print(scoreP1/1000);      
-      ab.setCursor(9,44);
-      ab.print(F("K+"));
-
-      ab.setCursor(3,52);
-      zeroPrint(scoreP1-1000);
+  if (P1){
+    if (!onePmode){ 
+      if (scoreP1>=1000){
+        ab.setCursor(3,44);
+        ab.print(scoreP1/1000);      
+        ab.setCursor(9,44);
+        ab.print(F("K+"));
+  
+        ab.setCursor(3,52);
+        zeroPrint(scoreP1-1000);
+      }
+      else {
+        ab.setCursor(3,52);
+        zeroPrint(scoreP1);
+      }    
     }
     else {
-      ab.setCursor(3,52);
-      zeroPrint(scoreP1);
-    }    
+      ab.setCursor(80,15);
+      ab.print("speed");
+      ab.setCursor(80,25);
+      ab.print((22-fallingTimerInitP1)/2);
+      ab.setCursor(80,40);
+      ab.print("score");
+      ab.setCursor(80,50);
+      zeroPrint1P(scoreP1);
+    }
   }
+  
   else {
     if (scoreP2>=1000){
       ab.setCursor(107,44);
@@ -79,11 +116,27 @@ void affScore(bool P1){
   }
 }
 
-void zeroPrint(int score){
+void zeroPrint(unsigned int score){
   if (score<10){
     ab.print(F("00"));    
   }
   else if (score <100){
+    ab.print(F("0"));  
+  }
+  ab.print (score);
+}
+
+void zeroPrint1P(unsigned int score){
+  if (score<10){
+    ab.print(F("0000"));    
+  }
+  else if (score <100){
+    ab.print(F("000"));  
+  }
+  else if (score <1000){
+    ab.print(F("00"));  
+  }
+  else if (score <10000){
     ab.print(F("0"));  
   }
   ab.print (score);

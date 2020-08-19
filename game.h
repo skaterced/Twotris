@@ -1,8 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#define NB_PLAYERS 1 //for now... but soon...
-
 #define P1_TURN UP_BUTTON
 #define P1_MOVE DOWN_BUTTON
 

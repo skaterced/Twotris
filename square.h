@@ -58,14 +58,14 @@ class Piece {
       this->shape=s; //todo: change square type when several
       this->p1=p1;
     }
-    void Piece::update();
-    void Piece::reInit(byte shape);
-    void Piece::shapeShift();
-    void Piece::stick();
-    void Piece::turn();
-    void Piece::draw();
-    bool Piece::move(byte dir);
-    bool Piece::checkCollision();
+    void update();
+    void reInit(byte shape);
+    void shapeShift();
+    void stick();
+    void turn(bool clockWise);
+    void draw();
+    bool move(byte dir);
+    bool checkCollision();
 };
 
 void resetOccupiedGrids();

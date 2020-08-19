@@ -72,6 +72,15 @@ void loop() {
             
           state=GAME;
         break;
+        case MENU_START_ALONE:        
+          randomSeed(timer*987);
+          resetOccupiedGrids();
+          nextP1.shapeShift();
+          nextP1.update();
+          globalSettings&=0xFE;
+          onePmode=true;
+          state=GAME;
+        break;        
         case MENU_INFO:
             state=INFO;
         break;
@@ -103,9 +112,10 @@ void loop() {
     break;
     
     case GAME:
-    
+
       playing(&p1, &p2, &nextP1, &nextP2);
-    
+
+ /*   
       control(&p1);
       control(&p2);
       
@@ -116,19 +126,7 @@ void loop() {
       p1.draw();
       p2.update();
       p2.draw();
-      /*
-      ab.setCursor(60,5);
-      ab.print("bkLn: ");
-      ab.print(blinkingLinesP1);      
-      ab.setCursor(60,15);
-      //ab.print("timer: ");
-      //ab.print(timer);
-      ab.setCursor(60,25);
-      ab.print("pos: ");
-      ab.print(p1.x);
-      ab.print(",");
-      ab.print(p1.y);
-      */
+*/
     break;   
     
     default :

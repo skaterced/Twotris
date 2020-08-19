@@ -10,7 +10,7 @@
 #define GRID_TOT 150
 #define UP_BORDER 3
 
-#define MAX_SPEED 4  //the less, the faster
+#define MAX_SPEED 2  //the less, the faster
 #define SPEED_THRESHOLD 50
 
 #define TL1 30 // Title line 1
@@ -30,13 +30,17 @@
 #define MAXS 110
 
 #define MENU_START 1
-#define MENU_SETTINGS 2
-#define MENU_INFO 3
-#define MENU_CREDIT 4
+#define MENU_START_ALONE 2
+#define MENU_SETTINGS 3
+#define MENU_INFO 4
+#define MENU_CREDIT 5
 #define MENU_BACK 9
 
 extern Arduboy2 ab;
 extern int timer;
+
+extern bool onePmode; //false;
+
 extern int fallingTimerP1;
 extern int fallingTimerP2;
 extern int fallingTimerInitP1;
@@ -51,8 +55,8 @@ extern int blinkingLinesP1;
 extern int blinkingLinesP2;
 extern int BlinkingTimerP1;
 extern int BlinkingTimerP2;
-extern int scoreP1;
-extern int scoreP2;
+extern unsigned int scoreP1;
+extern unsigned int scoreP2;
 extern byte occupiedGridP1[GRID_TOT];
 extern byte occupiedGridP2[GRID_TOT];
 //extern int NbStillSquaresP1;

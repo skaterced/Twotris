@@ -366,15 +366,21 @@ bool Piece::checkCollision(){ //return true if Piece collides with something
   return false;
 }
 
-void Piece::turn(){
-  byte backUp=this->orientation;
-  if (++this->orientation >=4)
-    this->orientation=0;
+void Piece::turn(bool clockWise){
+  uint8_t backUp=this->orientation;
+  if (clockWise){    
+    if (++this->orientation >=4)
+      this->orientation=0;
+  }
+  else {
+    if (this->orientation-- == 0)
+      this->orientation=3;    
+  }
   this->update();
   if (this->checkCollision()){
     this->orientation=backUp;
     this->update();
-  }
+  }  
 }
 
 void Piece::draw(){

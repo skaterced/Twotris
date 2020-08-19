@@ -4,7 +4,7 @@
 
 #define LI 15 //left Indent
 #define SBL 10 //space between lines
-#define MENU_MAX 4
+#define MENU_MAX 5
 
 byte menu(){
   
@@ -12,12 +12,14 @@ byte menu(){
   Square curSquare(2,SBL*menuCursor+1,TYPE_SIMPLE);
   
   ab.setCursor(LI,SBL*1);
-  ab.print(F("Play"));
+  ab.print(F("2 Players  :) :)"));
   ab.setCursor(LI,SBL*2);
-  ab.println(F("Settings"));
+  ab.print(F("1 Player"));
   ab.setCursor(LI,SBL*3);
-  ab.println(F("Info"));
+  ab.println(F("Settings"));
   ab.setCursor(LI,SBL*4);
+  ab.println(F("Info"));
+  ab.setCursor(LI,SBL*5);
   ab.println(F("Credit")); 
 
   curSquare.draw();
@@ -126,13 +128,13 @@ byte settings(){
         if (fallingTimerInitP1>MAX_SPEED)
           fallingTimerInitP1-=2;
         else
-          fallingTimerInitP1=fallingTimerP1; //default=20
+          fallingTimerInitP1=20; //default=20
       break;
       case 5:
         if (fallingTimerInitP2>MAX_SPEED)
           fallingTimerInitP2-=2;
         else
-          fallingTimerInitP2=fallingTimerP1; //default=20
+          fallingTimerInitP2=20; //default=20
       break;      
       default:
       break;
@@ -148,13 +150,15 @@ byte settings(){
 byte info(){
   ab.println(F("Move until you reach"));
   ab.println(F("a border to change"));
-  ab.println(F("moving direction"));
-  //ab.println("It turn clockwise only");
-  ab.println(F("Hold 'turn' to drop"));
-  ab.println(F(""));
-  ab.println(F("P1 Turn:Up P1 Move:Down"));
+  ab.println(F("direction."));
+  ab.setCursor(0,26);
+  ab.println(F("Hold 'Turn' to drop"));
+  ab.setCursor(0,41);
+  ab.println(F("P1 Turn:   P1 Move:"));
   ab.println(F("P2 Turn:A  P2 Move:B"));
   ab.print(F("Pause: Left"));
+  ab.drawChar(50,41,24,1,0,1);
+  ab.drawChar(115,41,25,1,0,1);
   //ab.drawChar(30,40,23,1,1,0);
   //ab.drawChar(60,40,24,1,1,0);
   
@@ -165,12 +169,12 @@ byte info(){
 }
 
 byte credit(){
-  ab.println(F("       TWOTRIS"));
-  ab.println(F(""));
-  ab.println(F("written by"));
-  ab.println(F("    C" "\x82" "dric Martin"));
-  ab.println(F(""));
-  ab.println(F("March 2020"));
+  ab.println(F("       TWOTRIS\n"
+                "\n"
+                "written by\n"
+                "    C" "\x82" "dric Martin\n"
+                "\n"
+                "March 2020"));
   
   if (ab.justPressed(B_BUTTON)){
     return MENU_BACK;     
